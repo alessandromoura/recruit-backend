@@ -20,7 +20,7 @@
     "CreditCardApi": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/creditcards",
+      "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

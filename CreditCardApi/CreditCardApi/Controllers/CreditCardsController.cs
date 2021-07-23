@@ -23,6 +23,10 @@ namespace CreditCardApi.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Gets this instance.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IEnumerable<CreditCardResponse>> Get()
         {

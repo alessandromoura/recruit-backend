@@ -31,7 +31,10 @@ namespace CreditCardApi.Controllers
             _logger = logger;
         }
 
-        // GET: api/<InputController>
+        /// <summary>
+        /// Gets all inputs.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<List<InputResponse>>> Get()
         {
@@ -47,7 +50,11 @@ namespace CreditCardApi.Controllers
             }
         }
 
-        // GET api/<InputController>/5
+        /// <summary>
+        /// Gets the input by specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<InputResponse>> Get(string id)
         {
@@ -74,7 +81,12 @@ namespace CreditCardApi.Controllers
             }
         }
 
-        // POST api/<InputController>
+        /// <summary>
+        /// Creates new input
+        /// </summary>
+        /// <param name="inputReq">The input req.</param>
+        /// <response code="201">Returns the newly created item</response>
+        /// <response code="400">Validation fails</response>   
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] InputRequest inputReq)
         {
@@ -103,13 +115,20 @@ namespace CreditCardApi.Controllers
             }
         }
 
-        // PUT api/<InputController>/5
+        /// <summary>
+        /// Puts the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="value">The value.</param>
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/<InputController>/5
+        /// <summary>
+        /// Deletes the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
