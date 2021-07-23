@@ -1,0 +1,64 @@
+{
+	"variables": [],
+	"info": {
+		"name": "ASBTest",
+		"_postman_id": "0aedda00-9fa8-16d9-1c47-bee474115076",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "All Inputs",
+			"request": {
+				"url": "https://localhost:5001/api/Inputs",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "All CreditCards",
+			"request": {
+				"url": "https://localhost:5001/api/Inputs",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Input",
+			"request": {
+				"url": "https://localhost:5001/api/Inputs/ecc3966d-0642-49ac-918b-cccab8d35e31",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "New Input",
+			"request": {
+				"url": "https://localhost:5001/api/Inputs",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Shan12\",\n    \"cardNumber\": \"3333\",\n    \"cvc\": 119,\n    \"expiryDate\": \"2022-11-10T00:00:00\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
