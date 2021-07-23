@@ -1,0 +1,1383 @@
+From 374790bfe6c08f19b5d57f20062f5a2ba420eba7 Mon Sep 17 00:00:00 2001
+From: "hanshiyi@gmail.com" <hanshiyi@gmail.com>
+Date: Fri, 23 Jul 2021 13:00:51 +1200
+Subject: [PATCH] first commit with test project
+
+---
+ .gitignore                                    |   7 ++
+ CreditCardApi/ASBTest.postman_collection.json |  64 ++++++++++
+ CreditCardApi/CreditCardApi.sln               |  31 +++++
+ .../Controllers/CreditCardsController.cs      |  35 ++++++
+ .../Controllers/InputsController.cs           | 118 ++++++++++++++++++
+ .../CreditCardApi/CreditCardApi.csproj        |  19 +++
+ .../Communications/CreditCardResponse.cs      |  10 ++
+ .../Domain/Communications/InputRequest.cs     |  20 +++
+ .../Domain/Communications/InputResponse.cs    |  17 +++
+ .../CreditCardApi/Domain/Models/CreditCard.cs |  17 +++
+ .../CreditCardApi/Domain/Models/Input.cs      |  21 ++++
+ .../Domain/Models/InputContext.cs             |  20 +++
+ .../CreditCardApi/Extensions/CustomMappers.cs |  45 +++++++
+ CreditCardApi/CreditCardApi/Program.cs        |  26 ++++
+ .../Properties/launchSettings.json            |  30 +++++
+ .../Repositories/CreditCardRepository.cs      |  67 ++++++++++
+ .../Repositories/ICreditCardRepository.cs     |  15 +++
+ .../Repositories/IInputRepository.cs          |  14 +++
+ .../Repositories/InputRepository.cs           |  67 ++++++++++
+ .../Commands/CreateNewInputCommand.cs         |  15 +++
+ .../Commands/CreateNewInputCommandHandler.cs  |  22 ++++
+ .../CreditCardApi/Services/IInputService.cs   |  15 +++
+ .../CreditCardApi/Services/InputService.cs    |  78 ++++++++++++
+ .../Services/Queries/GetInputByIdQuery.cs     |  11 ++
+ .../Queries/GetInputByIdQueryHandler.cs       |  22 ++++
+ .../Services/Queries/GetInputsQuery.cs        |  11 ++
+ .../Services/Queries/GetInputsQueryHandler.cs |  24 ++++
+ CreditCardApi/CreditCardApi/Startup.cs        |  64 ++++++++++
+ .../Validators/InputIdValidator.cs            |  21 ++++
+ .../Validators/InputRequestValidator.cs       |  19 +++
+ .../appsettings.Development.json              |   9 ++
+ CreditCardApi/CreditCardApi/appsettings.json  |  10 ++
+ .../CreditCardApiTests.csproj                 |  22 ++++
+ CreditCardApi/CreditCardApiTests/UnitTest1.cs |  14 +++
+ CreditCardApi/UnitTests/InputServiceTests.cs  |  52 ++++++++
+ CreditCardApi/UnitTests/UnitTests.csproj      |  27 ++++
+ 36 files changed, 1079 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 CreditCardApi/ASBTest.postman_collection.json
+ create mode 100644 CreditCardApi/CreditCardApi.sln
+ create mode 100644 CreditCardApi/CreditCardApi/Controllers/CreditCardsController.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Controllers/InputsController.cs
+ create mode 100644 CreditCardApi/CreditCardApi/CreditCardApi.csproj
+ create mode 100644 CreditCardApi/CreditCardApi/Domain/Communications/CreditCardResponse.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Domain/Communications/InputRequest.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Domain/Communications/InputResponse.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Domain/Models/CreditCard.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Domain/Models/Input.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Domain/Models/InputContext.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Extensions/CustomMappers.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Program.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Properties/launchSettings.json
+ create mode 100644 CreditCardApi/CreditCardApi/Repositories/CreditCardRepository.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Repositories/ICreditCardRepository.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Repositories/IInputRepository.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Repositories/InputRepository.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Services/Commands/CreateNewInputCommand.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Services/Commands/CreateNewInputCommandHandler.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Services/IInputService.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Services/InputService.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Services/Queries/GetInputByIdQuery.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Services/Queries/GetInputByIdQueryHandler.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Services/Queries/GetInputsQuery.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Services/Queries/GetInputsQueryHandler.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Startup.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Validators/InputIdValidator.cs
+ create mode 100644 CreditCardApi/CreditCardApi/Validators/InputRequestValidator.cs
+ create mode 100644 CreditCardApi/CreditCardApi/appsettings.Development.json
+ create mode 100644 CreditCardApi/CreditCardApi/appsettings.json
+ create mode 100644 CreditCardApi/CreditCardApiTests/CreditCardApiTests.csproj
+ create mode 100644 CreditCardApi/CreditCardApiTests/UnitTest1.cs
+ create mode 100644 CreditCardApi/UnitTests/InputServiceTests.cs
+ create mode 100644 CreditCardApi/UnitTests/UnitTests.csproj
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..8bd9396
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,7 @@
++CreditCardApi/.vs/
++CreditCardApi/CreditCardApi/bin/
++CreditCardApi/CreditCardApi/obj/
++CreditCardApi/IntegrationTest/obj/
++CreditCardApi/UnitTests/obj/
++obj
++bin
+diff --git a/CreditCardApi/ASBTest.postman_collection.json b/CreditCardApi/ASBTest.postman_collection.json
+new file mode 100644
+index 0000000..a5a1abf
+--- /dev/null
++++ b/CreditCardApi/ASBTest.postman_collection.json
+@@ -0,0 +1,64 @@
++{
++	"variables": [],
++	"info": {
++		"name": "ASBTest",
++		"_postman_id": "0aedda00-9fa8-16d9-1c47-bee474115076",
++		"description": "",
++		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
++	},
++	"item": [
++		{
++			"name": "All Inputs",
++			"request": {
++				"url": "https://localhost:5001/api/Inputs",
++				"method": "GET",
++				"header": [],
++				"body": {},
++				"description": ""
++			},
++			"response": []
++		},
++		{
++			"name": "All CreditCards",
++			"request": {
++				"url": "https://localhost:5001/api/Inputs",
++				"method": "GET",
++				"header": [],
++				"body": {},
++				"description": ""
++			},
++			"response": []
++		},
++		{
++			"name": "Input",
++			"request": {
++				"url": "https://localhost:5001/api/Inputs/ecc3966d-0642-49ac-918b-cccab8d35e31",
++				"method": "GET",
++				"header": [],
++				"body": {},
++				"description": ""
++			},
++			"response": []
++		},
++		{
++			"name": "New Input",
++			"request": {
++				"url": "https://localhost:5001/api/Inputs",
++				"method": "POST",
++				"header": [
++					{
++						"key": "Content-Type",
++						"value": "application/json",
++						"description": ""
++					}
++				],
++				"body": {
++					"mode": "raw",
++					"raw": "{\n    \"name\": \"Shan12\",\n    \"cardNumber\": \"3333\",\n    \"cvc\": 119,\n    \"expiryDate\": \"2022-11-10T00:00:00\"\n}"
++				},
++				"description": ""
++			},
++			"response": []
++		}
++	]
++}
+\ No newline at end of file
+diff --git a/CreditCardApi/CreditCardApi.sln b/CreditCardApi/CreditCardApi.sln
+new file mode 100644
+index 0000000..313453b
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi.sln
+@@ -0,0 +1,31 @@
++﻿
++Microsoft Visual Studio Solution File, Format Version 12.00
++# Visual Studio Version 16
++VisualStudioVersion = 16.0.31424.327
++MinimumVisualStudioVersion = 10.0.40219.1
++Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreditCardApi", "CreditCardApi\CreditCardApi.csproj", "{E744F951-0402-4263-9C06-A05C1701157D}"
++EndProject
++Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{6792DC0D-F8F3-47C5-BFC7-CAC34384CA37}"
++EndProject
++Global
++	GlobalSection(SolutionConfigurationPlatforms) = preSolution
++		Debug|Any CPU = Debug|Any CPU
++		Release|Any CPU = Release|Any CPU
++	EndGlobalSection
++	GlobalSection(ProjectConfigurationPlatforms) = postSolution
++		{E744F951-0402-4263-9C06-A05C1701157D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
++		{E744F951-0402-4263-9C06-A05C1701157D}.Debug|Any CPU.Build.0 = Debug|Any CPU
++		{E744F951-0402-4263-9C06-A05C1701157D}.Release|Any CPU.ActiveCfg = Release|Any CPU
++		{E744F951-0402-4263-9C06-A05C1701157D}.Release|Any CPU.Build.0 = Release|Any CPU
++		{6792DC0D-F8F3-47C5-BFC7-CAC34384CA37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
++		{6792DC0D-F8F3-47C5-BFC7-CAC34384CA37}.Debug|Any CPU.Build.0 = Debug|Any CPU
++		{6792DC0D-F8F3-47C5-BFC7-CAC34384CA37}.Release|Any CPU.ActiveCfg = Release|Any CPU
++		{6792DC0D-F8F3-47C5-BFC7-CAC34384CA37}.Release|Any CPU.Build.0 = Release|Any CPU
++	EndGlobalSection
++	GlobalSection(SolutionProperties) = preSolution
++		HideSolutionNode = FALSE
++	EndGlobalSection
++	GlobalSection(ExtensibilityGlobals) = postSolution
++		SolutionGuid = {8DF933B1-2D38-40BD-8430-B4C6A209A4D9}
++	EndGlobalSection
++EndGlobal
+diff --git a/CreditCardApi/CreditCardApi/Controllers/CreditCardsController.cs b/CreditCardApi/CreditCardApi/Controllers/CreditCardsController.cs
+new file mode 100644
+index 0000000..81e82f9
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Controllers/CreditCardsController.cs
+@@ -0,0 +1,35 @@
++﻿using CreditCardApi.Domain.Communications;
++using CreditCardApi.Extensions;
++using CreditCardApi.Services;
++using Microsoft.AspNetCore.Mvc;
++using Microsoft.Extensions.Logging;
++using System;
++using System.Collections.Generic;
++using System.Linq;
++using System.Threading.Tasks;
++
++namespace CreditCardApi.Controllers
++{
++    [ApiController]
++    [Route("api/creditcards")]
++    public class CreditCardsController : ControllerBase
++    {
++        private readonly ILogger<CreditCardsController> _logger;
++        private readonly IInputService _inputService;
++
++        public CreditCardsController(IInputService inputService, ILogger<CreditCardsController> logger)
++        {
++            _inputService = inputService;
++            _logger = logger;
++        }
++
++        [HttpGet]
++        public async Task<IEnumerable<CreditCardResponse>> Get()
++        {
++            //not refactored to use mediatr yet
++            var result = await _inputService.GetAllCreditCards();
++            var response = result.Select(x => x.ToCreditCardResponse()).ToList();
++            return response;
++        }
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Controllers/InputsController.cs b/CreditCardApi/CreditCardApi/Controllers/InputsController.cs
+new file mode 100644
+index 0000000..f6f0959
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Controllers/InputsController.cs
+@@ -0,0 +1,118 @@
++﻿using CreditCardApi.Domain.Communications;
++using CreditCardApi.Extensions;
++using CreditCardApi.Services;
++using CreditCardApi.Services.Commands;
++using CreditCardApi.Services.Queries;
++using CreditCardApi.Validators;
++using FluentValidation;
++using MediatR;
++using Microsoft.AspNetCore.Mvc;
++using Microsoft.Extensions.Logging;
++using System;
++using System.Collections.Generic;
++using System.Linq;
++using System.Net;
++using System.Threading.Tasks;
++
++// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
++
++namespace CreditCardApi.Controllers
++{
++    [Route("api/inputs")]
++    [ApiController]
++    public class InputsController : ControllerBase
++    {
++        private readonly IMediator _mediator;
++        private readonly ILogger<InputsController> _logger;
++
++        public InputsController(IMediator mediator, ILogger<InputsController> logger)
++        {
++            _mediator = mediator;
++            _logger = logger;
++        }
++
++        // GET: api/<InputController>
++        [HttpGet]
++        public async Task<ActionResult<List<InputResponse>>> Get()
++        {
++            try
++            {
++                var result = await _mediator.Send(new GetInputsQuery());
++                var response = result.Select(x => x.ToInputResponse()).ToList();
++                return response;
++            }
++            catch (Exception ex)
++            {
++                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
++            }
++        }
++
++        // GET api/<InputController>/5
++        [HttpGet("{id}")]
++        public async Task<ActionResult<InputResponse>> Get(string id)
++        {
++            try
++            {
++                var validator = new InputIdValidator();
++                validator.ValidateAndThrow(id);
++
++                var result = await _mediator.Send(new GetInputByIdQuery
++                {
++                     InputId = id
++                });
++
++                if (result != null)
++                    return result.ToInputResponse();
++                else return NotFound();
++            }
++            catch (Exception ex)
++            {
++                if (ex.Source.Equals("fluentvalidation", StringComparison.OrdinalIgnoreCase))
++                    return StatusCode((int)HttpStatusCode.BadRequest, ex.Message);
++                else
++                    return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
++            }
++        }
++
++        // POST api/<InputController>
++        [HttpPost]
++        public async Task<ActionResult> Post([FromBody] InputRequest inputReq)
++        {
++            try
++            {
++                var validator = new InputRequestValidator();
++                validator.ValidateAndThrow(inputReq);
++
++                var result = await _mediator.Send(new CreateNewInputCommand
++                {
++                     NewInput = inputReq.ToInputModel()
++                });
++                 
++                return CreatedAtAction(nameof(Get), new { id = result.Id}, result.ToInputResponse());
++            }
++            catch (KeyNotFoundException kex)
++            {
++                return StatusCode((int)HttpStatusCode.BadRequest, kex.Message);
++            }
++            catch (Exception ex)
++            {
++                if (ex.Source.Equals("fluentvalidation", StringComparison.OrdinalIgnoreCase))
++                    return StatusCode((int)HttpStatusCode.BadRequest, ex.Message);
++                else
++                    return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
++            }
++        }
++
++        // PUT api/<InputController>/5
++        [HttpPut("{id}")]
++        public void Put(int id, [FromBody] string value)
++        {
++        }
++
++        // DELETE api/<InputController>/5
++        [HttpDelete("{id}")]
++        public void Delete(int id)
++        {
++        }
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/CreditCardApi.csproj b/CreditCardApi/CreditCardApi/CreditCardApi.csproj
+new file mode 100644
+index 0000000..ed52a0a
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/CreditCardApi.csproj
+@@ -0,0 +1,19 @@
++<Project Sdk="Microsoft.NET.Sdk.Web">
++
++  <PropertyGroup>
++    <TargetFramework>netcoreapp3.1</TargetFramework>
++  </PropertyGroup>
++
++  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
++    <WarningLevel>5</WarningLevel>
++  </PropertyGroup>
++
++  <ItemGroup>
++    <PackageReference Include="FluentValidation" Version="10.3.0" />
++    <PackageReference Include="MediatR" Version="9.0.0" />
++    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
++    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.8" />
++  </ItemGroup>
++
++
++</Project>
+diff --git a/CreditCardApi/CreditCardApi/Domain/Communications/CreditCardResponse.cs b/CreditCardApi/CreditCardApi/Domain/Communications/CreditCardResponse.cs
+new file mode 100644
+index 0000000..407a026
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Domain/Communications/CreditCardResponse.cs
+@@ -0,0 +1,10 @@
++﻿using System;
++using System.Collections.Generic;
++
++namespace CreditCardApi.Domain.Communications
++{
++    public class CreditCardResponse
++    {
++        public string CardNumber { get; set; }
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Domain/Communications/InputRequest.cs b/CreditCardApi/CreditCardApi/Domain/Communications/InputRequest.cs
+new file mode 100644
+index 0000000..015e65b
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Domain/Communications/InputRequest.cs
+@@ -0,0 +1,20 @@
++﻿using System;
++using System.ComponentModel.DataAnnotations;
++
++namespace CreditCardApi.Domain.Communications
++{
++    public class InputRequest
++    {
++        //[Required]
++        //[StringLength(50)]
++        public string Name { get; set; }
++
++        //[Required]
++        //[RegularExpression(@"^[0-9]+$", ErrorMessage ="Card number must be numeric")]
++        public string CardNumber { get; set; }
++
++        public int? CVC { get; set; }
++
++        public DateTime? ExpiryDate { get; set; }
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Domain/Communications/InputResponse.cs b/CreditCardApi/CreditCardApi/Domain/Communications/InputResponse.cs
+new file mode 100644
+index 0000000..269567b
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Domain/Communications/InputResponse.cs
+@@ -0,0 +1,17 @@
++﻿using System;
++
++namespace CreditCardApi.Domain.Communications
++{
++    public class InputResponse
++    {
++        public string Id { get; set;
++        }
++        public string Name { get; set; }
++
++        public string CardNumber { get; set; }
++
++        public int CVC { get; set; }
++
++        public DateTime ExpiryDate { get; set; }
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Domain/Models/CreditCard.cs b/CreditCardApi/CreditCardApi/Domain/Models/CreditCard.cs
+new file mode 100644
+index 0000000..ca0a7ab
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Domain/Models/CreditCard.cs
+@@ -0,0 +1,17 @@
++﻿using System;
++using System.ComponentModel.DataAnnotations;
++using System.ComponentModel.DataAnnotations.Schema;
++
++namespace CreditCardApi.Domain.Models
++{ 
++    public class CreditCard
++    {
++        [Key]
++        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
++        public Guid Id { get; set;
++        }        
++
++        public string CardNumber { get; set; }
++
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Domain/Models/Input.cs b/CreditCardApi/CreditCardApi/Domain/Models/Input.cs
+new file mode 100644
+index 0000000..402c957
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Domain/Models/Input.cs
+@@ -0,0 +1,21 @@
++﻿using System;
++using System.ComponentModel.DataAnnotations;
++using System.ComponentModel.DataAnnotations.Schema;
++
++namespace CreditCardApi.Domain.Models
++{
++    public class Input
++    {
++        [Key]
++        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
++        public Guid Id { get; set; }
++
++        public string Name { get; set; }
++
++        public int CVC { get; set; }
++
++        public DateTime ExpiryDate { get; set; }
++
++        public string CardNumber { get; set; }
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Domain/Models/InputContext.cs b/CreditCardApi/CreditCardApi/Domain/Models/InputContext.cs
+new file mode 100644
+index 0000000..740f504
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Domain/Models/InputContext.cs
+@@ -0,0 +1,20 @@
++﻿using Microsoft.EntityFrameworkCore;
++
++namespace CreditCardApi.Domain.Models
++{
++    public class InputContext : DbContext
++    {
++        public InputContext(DbContextOptions<InputContext> options)
++            : base(options)
++        {
++        }
++
++        public DbSet<Input> InputList { get; set; }
++
++        public DbSet<CreditCard> CardList { get; set; }
++
++        //protected override void OnModelCreating(ModelBuilder modelBuilder)
++        //{
++        //}
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Extensions/CustomMappers.cs b/CreditCardApi/CreditCardApi/Extensions/CustomMappers.cs
+new file mode 100644
+index 0000000..9e95479
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Extensions/CustomMappers.cs
+@@ -0,0 +1,45 @@
++﻿using CreditCardApi.Domain.Communications;
++using CreditCardApi.Domain.Models;
++
++namespace CreditCardApi.Extensions
++{
++    public static class CustomMappers
++    {
++        public static Input ToInputModel(this InputRequest inputReq)
++        {
++            var response = new Input
++            {
++                Name = inputReq.Name,                
++                CVC = inputReq.CVC.GetValueOrDefault(),
++                ExpiryDate = inputReq.ExpiryDate.GetValueOrDefault(),
++                CardNumber = inputReq.CardNumber
++            };
++
++            return response;
++        }
++
++        public static InputResponse ToInputResponse(this Input inputModel)
++        {
++            var response = new InputResponse { 
++                Id = inputModel.Id.ToString(),
++                Name = inputModel.Name,
++                CardNumber = inputModel.CardNumber,
++                CVC = inputModel.CVC,
++                ExpiryDate = inputModel.ExpiryDate
++            };
++            
++            return response;
++        }
++
++        public static CreditCardResponse ToCreditCardResponse(this CreditCard creditCardModel)
++        {
++            var response = new CreditCardResponse
++            {
++                CardNumber = creditCardModel.CardNumber,
++            };
++
++            return response;
++        }
++    }
++
++}
+diff --git a/CreditCardApi/CreditCardApi/Program.cs b/CreditCardApi/CreditCardApi/Program.cs
+new file mode 100644
+index 0000000..c958d36
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Program.cs
+@@ -0,0 +1,26 @@
++using Microsoft.AspNetCore.Hosting;
++using Microsoft.Extensions.Configuration;
++using Microsoft.Extensions.Hosting;
++using Microsoft.Extensions.Logging;
++using System;
++using System.Collections.Generic;
++using System.Linq;
++using System.Threading.Tasks;
++
++namespace CreditCardApi
++{
++    public class Program
++    {
++        public static void Main(string[] args)
++        {
++            CreateHostBuilder(args).Build().Run();
++        }
++
++        public static IHostBuilder CreateHostBuilder(string[] args) =>
++            Host.CreateDefaultBuilder(args)
++                .ConfigureWebHostDefaults(webBuilder =>
++                {
++                    webBuilder.UseStartup<Startup>();
++                });
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Properties/launchSettings.json b/CreditCardApi/CreditCardApi/Properties/launchSettings.json
+new file mode 100644
+index 0000000..99d3c52
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Properties/launchSettings.json
+@@ -0,0 +1,30 @@
++{
++  "iisSettings": {
++    "windowsAuthentication": false,
++    "anonymousAuthentication": true,
++    "iisExpress": {
++      "applicationUrl": "http://localhost:20000",
++      "sslPort": 44334
++    }
++  },
++  "$schema": "http://json.schemastore.org/launchsettings.json",
++  "profiles": {
++    "IIS Express": {
++      "commandName": "IISExpress",
++      "launchBrowser": true,
++      "launchUrl": "weatherforecast",
++      "environmentVariables": {
++        "ASPNETCORE_ENVIRONMENT": "Development"
++      }
++    },
++    "CreditCardApi": {
++      "commandName": "Project",
++      "launchBrowser": true,
++      "launchUrl": "api/creditcards",
++      "environmentVariables": {
++        "ASPNETCORE_ENVIRONMENT": "Development"
++      },
++      "applicationUrl": "https://localhost:5001;http://localhost:5000"
++    }
++  }
++}
+\ No newline at end of file
+diff --git a/CreditCardApi/CreditCardApi/Repositories/CreditCardRepository.cs b/CreditCardApi/CreditCardApi/Repositories/CreditCardRepository.cs
+new file mode 100644
+index 0000000..5287098
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Repositories/CreditCardRepository.cs
+@@ -0,0 +1,67 @@
++﻿using CreditCardApi.Domain.Models;
++using System;
++using System.Collections.Generic;
++using System.Linq;
++using System.Threading.Tasks;
++
++namespace CreditCardApi.Repositories
++{
++    public class CreditCardRepository : ICreditCardRepository
++    {
++        private InputContext _context;
++
++        public CreditCardRepository(InputContext context)
++        {
++            _context = context;
++            InitSampleRecords();
++        }
++
++        private void InitSampleRecords()
++        {
++            //just to create sample order records if order list is empty during init
++            if (_context.CardList.Count() == 0)
++            {
++                _context.CardList.Add(new CreditCard { CardNumber = "1234" });
++                _context.CardList.Add(new CreditCard { CardNumber = "1445" });
++                _context.CardList.Add(new CreditCard { CardNumber = "3333" });
++                _context.SaveChanges();
++            }
++        }
++
++        /// <summary>
++        /// Selects the by card number.
++        /// </summary>
++        /// <param name="cardNum">The card number.</param>
++        /// <returns></returns>
++        public async Task<CreditCard> SelectByCardNumber(string cardNum)
++        {
++            var card = _context.CardList.FirstOrDefault(x => string.Equals(x.CardNumber, cardNum, StringComparison.OrdinalIgnoreCase));
++            return await Task.FromResult(card);
++        }
++
++        /// <summary>
++        /// Selects all.
++        /// </summary>
++        /// <returns></returns>
++        public async Task<IEnumerable<CreditCard>> SelectAll()
++        {
++            var cards = _context.CardList.ToList();
++
++            return await Task.FromResult(cards);
++        }
++
++        /// <summary>
++        /// Inserts the specified card.
++        /// </summary>
++        /// <param name="card">The card.</param>
++        /// <returns></returns>
++        public async Task<CreditCard> Insert(CreditCard card)
++        {
++            _context.CardList.Add(card);
++            await _context.SaveChangesAsync();
++
++            return card;
++        }
++
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Repositories/ICreditCardRepository.cs b/CreditCardApi/CreditCardApi/Repositories/ICreditCardRepository.cs
+new file mode 100644
+index 0000000..73a6ab0
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Repositories/ICreditCardRepository.cs
+@@ -0,0 +1,15 @@
++﻿using CreditCardApi.Domain.Models;
++using System.Collections.Generic;
++using System.Threading.Tasks;
++
++namespace CreditCardApi.Repositories
++{
++    public interface ICreditCardRepository
++    {
++        Task<CreditCard> SelectByCardNumber(string cardNum);
++
++        Task<IEnumerable<CreditCard>> SelectAll();
++
++        Task<CreditCard> Insert(CreditCard card);
++    }
++}
+\ No newline at end of file
+diff --git a/CreditCardApi/CreditCardApi/Repositories/IInputRepository.cs b/CreditCardApi/CreditCardApi/Repositories/IInputRepository.cs
+new file mode 100644
+index 0000000..b5f1f18
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Repositories/IInputRepository.cs
+@@ -0,0 +1,14 @@
++﻿using CreditCardApi.Domain.Models;
++using System;
++using System.Collections.Generic;
++using System.Threading.Tasks;
++
++namespace CreditCardApi.Repositories
++{
++    public interface IInputRepository
++    {
++        Task<Input> Insert(Input record);
++        Task<IEnumerable<Input>> SelectAll();
++        Task<Input> SelectById(Guid id);
++    }
++}
+\ No newline at end of file
+diff --git a/CreditCardApi/CreditCardApi/Repositories/InputRepository.cs b/CreditCardApi/CreditCardApi/Repositories/InputRepository.cs
+new file mode 100644
+index 0000000..af99ce4
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Repositories/InputRepository.cs
+@@ -0,0 +1,67 @@
++﻿using CreditCardApi.Domain.Models;
++using Microsoft.EntityFrameworkCore;
++using System;
++using System.Collections.Generic;
++using System.Linq;
++using System.Threading.Tasks;
++
++namespace CreditCardApi.Repositories
++{
++    public class InputRepository : IInputRepository
++    {
++        private InputContext _context;
++
++        public InputRepository(InputContext context)
++        {
++            _context = context;
++        }
++
++        /// <summary>
++        /// Selects record by identifier.
++        /// </summary>
++        /// <param name="id">The identifier.</param>
++        /// <returns></returns>
++        public async Task<Input> SelectById(Guid id)
++        {
++            var inputs = _context.InputList
++                .SingleOrDefault(x => x.Id == id);
++            return await Task.FromResult(inputs);
++        }
++
++        /// <summary>
++        /// Selects all.
++        /// </summary>
++        /// <returns></returns>
++        public async Task<IEnumerable<Input>> SelectAll()
++        {
++            var inputs = _context.InputList
++                .ToList();
++
++            return await Task.FromResult(inputs);
++        }
++
++        /// <summary>
++        /// Inserts the specified record.
++        /// </summary>
++        /// <param name="record">The record.</param>
++        /// <returns></returns>
++        public async Task<Input> Insert(Input record)
++        {
++            _context.InputList.Add(record);
++            await _context.SaveChangesAsync();
++
++            return record;
++        }
++
++        //public async Task<bool> Update(CreditCard updateCard)
++        //{
++        //    var index = _cards.FindIndex(x => x.CardId == updateCard.CardId);
++        //    if (index != -1)
++        //    {
++        //        _cards[index] = updateCard;
++        //        return true;
++        //    }
++        //    return false;
++        //}
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Services/Commands/CreateNewInputCommand.cs b/CreditCardApi/CreditCardApi/Services/Commands/CreateNewInputCommand.cs
+new file mode 100644
+index 0000000..8b3d5ce
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Services/Commands/CreateNewInputCommand.cs
+@@ -0,0 +1,15 @@
++﻿using CreditCardApi.Domain.Models;
++using MediatR;
++using System;
++using System.Collections.Generic;
++using System.Linq;
++using System.Threading.Tasks;
++
++namespace CreditCardApi.Services.Commands
++{
++    public class CreateNewInputCommand : IRequest<Input>
++    {
++        public Input NewInput { get; set; }
++    }
++
++}
+diff --git a/CreditCardApi/CreditCardApi/Services/Commands/CreateNewInputCommandHandler.cs b/CreditCardApi/CreditCardApi/Services/Commands/CreateNewInputCommandHandler.cs
+new file mode 100644
+index 0000000..61fb798
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Services/Commands/CreateNewInputCommandHandler.cs
+@@ -0,0 +1,22 @@
++﻿using CreditCardApi.Domain.Models;
++using MediatR;
++using System.Threading;
++using System.Threading.Tasks;
++
++namespace CreditCardApi.Services.Commands
++{
++    public class CreateNewInputCommandHandler : IRequestHandler<CreateNewInputCommand, Input>
++    {
++        private readonly IInputService _inputService;
++        public CreateNewInputCommandHandler(IInputService inputService)
++        {
++            _inputService = inputService;
++        }
++
++        public async Task<Input> Handle(CreateNewInputCommand request, CancellationToken cancellationToken)
++        {
++            return await _inputService.AddNewInput(request.NewInput);
++        }
++    }
++
++}
+diff --git a/CreditCardApi/CreditCardApi/Services/IInputService.cs b/CreditCardApi/CreditCardApi/Services/IInputService.cs
+new file mode 100644
+index 0000000..cd97da5
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Services/IInputService.cs
+@@ -0,0 +1,15 @@
++﻿using CreditCardApi.Domain.Models;
++using System.Collections.Generic;
++using System.Threading.Tasks;
++
++namespace CreditCardApi.Services
++{
++    public interface IInputService
++    {
++        Task<Input> AddNewInput(Input newInput);
++        Task<IEnumerable<Input>> GetAllInputs();
++        Task<Input> GetInputById(string inputId);
++
++        Task<IEnumerable<CreditCard>> GetAllCreditCards();
++    }
++}
+\ No newline at end of file
+diff --git a/CreditCardApi/CreditCardApi/Services/InputService.cs b/CreditCardApi/CreditCardApi/Services/InputService.cs
+new file mode 100644
+index 0000000..e5a9733
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Services/InputService.cs
+@@ -0,0 +1,78 @@
++﻿using CreditCardApi.Domain.Models;
++using CreditCardApi.Repositories;
++using System;
++using System.Collections.Generic;
++using System.Threading.Tasks;
++
++namespace CreditCardApi.Services
++{
++    public class InputService : IInputService
++    {
++        private readonly IInputRepository _inputRepository;
++        private readonly ICreditCardRepository _creditCardRepository;
++
++        public InputService(IInputRepository inputRepository, ICreditCardRepository creditCardRepository)
++        {
++            _inputRepository = inputRepository;
++            _creditCardRepository = creditCardRepository;
++        }
++
++        /// <summary>
++        /// Gets all inputs.
++        /// </summary>
++        /// <returns></returns>
++        public async Task<IEnumerable<Input>> GetAllInputs()
++        {
++            var results = await _inputRepository.SelectAll();
++
++            return results;
++        }
++
++        /// <summary>
++        /// Gets the input by identifier.
++        /// </summary>
++        /// <param name="inputId">The input identifier.</param>
++        /// <returns></returns>
++        /// <exception cref="KeyNotFoundException">id is invalid</exception>
++        public async Task<Input> GetInputById(string inputId)
++        {
++            if (!Guid.TryParse(inputId, out var guidId) || guidId == Guid.Empty) 
++                throw new KeyNotFoundException("id is invalid");
++
++            var result = await _inputRepository.SelectById(guidId);
++
++            return result;
++        }
++
++        /// <summary>
++        /// Adds the new input.
++        /// </summary>
++        /// <param name="newInput">The new input.</param>
++        /// <returns></returns>
++        public async Task<Input> AddNewInput(Input newInput)
++        {
++            if (string.IsNullOrWhiteSpace(newInput?.CardNumber))
++                throw new ArgumentNullException("newInput.CardNumber");
++
++            var card = await _creditCardRepository.SelectByCardNumber(newInput.CardNumber);
++
++            if (card == null)
++                throw new KeyNotFoundException("credit card number not found");
++
++            var result = await _inputRepository.Insert(newInput);
++
++            return result;
++        }
++
++        /// <summary>
++        /// Gets all credit cards.
++        /// </summary>
++        /// <returns></returns>
++        public async Task<IEnumerable<CreditCard>> GetAllCreditCards()
++        {
++            var results = await _creditCardRepository.SelectAll();
++
++            return results;
++        }
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Services/Queries/GetInputByIdQuery.cs b/CreditCardApi/CreditCardApi/Services/Queries/GetInputByIdQuery.cs
+new file mode 100644
+index 0000000..35712d6
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Services/Queries/GetInputByIdQuery.cs
+@@ -0,0 +1,11 @@
++﻿using CreditCardApi.Domain.Models;
++using MediatR;
++
++namespace CreditCardApi.Services.Queries
++{
++    public class GetInputByIdQuery : IRequest<Input>
++    {
++        public string InputId { get; set; }
++    }
++
++}
+diff --git a/CreditCardApi/CreditCardApi/Services/Queries/GetInputByIdQueryHandler.cs b/CreditCardApi/CreditCardApi/Services/Queries/GetInputByIdQueryHandler.cs
+new file mode 100644
+index 0000000..2d2efc3
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Services/Queries/GetInputByIdQueryHandler.cs
+@@ -0,0 +1,22 @@
++﻿using CreditCardApi.Domain.Models;
++using MediatR;
++using System.Threading;
++using System.Threading.Tasks;
++
++namespace CreditCardApi.Services.Queries
++{
++    public class GetInputByIdQueryHandler : IRequestHandler<GetInputByIdQuery, Input>
++    {
++        private readonly IInputService _inputService;
++        public GetInputByIdQueryHandler(IInputService inputService)
++        {
++            _inputService = inputService;
++        }
++
++        public async Task<Input> Handle(GetInputByIdQuery request, CancellationToken cancellationToken)
++        {
++            return await _inputService.GetInputById(request.InputId);
++        }
++    }
++
++}
+diff --git a/CreditCardApi/CreditCardApi/Services/Queries/GetInputsQuery.cs b/CreditCardApi/CreditCardApi/Services/Queries/GetInputsQuery.cs
+new file mode 100644
+index 0000000..3220d94
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Services/Queries/GetInputsQuery.cs
+@@ -0,0 +1,11 @@
++﻿using CreditCardApi.Domain.Models;
++using MediatR;
++using System.Collections.Generic;
++
++namespace CreditCardApi.Services.Queries
++{
++    public class GetInputsQuery : IRequest<List<Input>>
++    {
++    }
++
++}
+diff --git a/CreditCardApi/CreditCardApi/Services/Queries/GetInputsQueryHandler.cs b/CreditCardApi/CreditCardApi/Services/Queries/GetInputsQueryHandler.cs
+new file mode 100644
+index 0000000..2da988f
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Services/Queries/GetInputsQueryHandler.cs
+@@ -0,0 +1,24 @@
++﻿using CreditCardApi.Domain.Models;
++using MediatR;
++using System.Collections.Generic;
++using System.Linq;
++using System.Threading;
++using System.Threading.Tasks;
++
++namespace CreditCardApi.Services.Queries
++{
++    public class GetInputsQueryHandler : IRequestHandler<GetInputsQuery, List<Input>>
++    {
++        private readonly IInputService _inputService;
++        public GetInputsQueryHandler(IInputService inputService)
++        {
++            _inputService = inputService;
++        }
++
++        public async Task<List<Input>> Handle(GetInputsQuery request, CancellationToken cancellationToken)
++        {
++            return (await _inputService.GetAllInputs()).ToList();
++        }
++    }
++
++}
+diff --git a/CreditCardApi/CreditCardApi/Startup.cs b/CreditCardApi/CreditCardApi/Startup.cs
+new file mode 100644
+index 0000000..e3c4540
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Startup.cs
+@@ -0,0 +1,64 @@
++using CreditCardApi.Domain.Models;
++using CreditCardApi.Repositories;
++using CreditCardApi.Services;
++using CreditCardApi.Services.Commands;
++using CreditCardApi.Services.Queries;
++using MediatR;
++using Microsoft.AspNetCore.Builder;
++using Microsoft.AspNetCore.Hosting;
++using Microsoft.EntityFrameworkCore;
++using Microsoft.Extensions.Configuration;
++using Microsoft.Extensions.DependencyInjection;
++using Microsoft.Extensions.Hosting;
++using System.Collections.Generic;
++using System.Reflection;
++
++namespace CreditCardApi
++{
++    public class Startup
++    {
++        public Startup(IConfiguration configuration)
++        {
++            Configuration = configuration;
++        }
++
++        public IConfiguration Configuration { get; }
++
++        // This method gets called by the runtime. Use this method to add services to the container.
++        public void ConfigureServices(IServiceCollection services)
++        {
++            services.AddScoped<ICreditCardRepository, CreditCardRepository>();
++            services.AddScoped<IInputRepository, InputRepository>();
++            services.AddScoped<IInputService, InputService>();
++            services.AddDbContext<InputContext>(opt => opt.UseInMemoryDatabase("InputStorage"));
++            
++            services.AddTransient<IRequestHandler<CreateNewInputCommand, Input>, CreateNewInputCommandHandler>();
++            services.AddTransient<IRequestHandler<GetInputByIdQuery, Input>, GetInputByIdQueryHandler>();
++            services.AddTransient<IRequestHandler<GetInputsQuery, List<Input>> , GetInputsQueryHandler>();
++
++            services.AddControllers();
++
++            services.AddMediatR(Assembly.GetExecutingAssembly());
++        }
++
++        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
++        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
++        {
++            if (env.IsDevelopment())
++            {
++                app.UseDeveloperExceptionPage();
++            }
++
++            app.UseHttpsRedirection();
++
++            app.UseRouting();
++
++            app.UseAuthorization();
++
++            app.UseEndpoints(endpoints =>
++            {
++                endpoints.MapControllers();
++            });
++        }
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Validators/InputIdValidator.cs b/CreditCardApi/CreditCardApi/Validators/InputIdValidator.cs
+new file mode 100644
+index 0000000..a477669
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Validators/InputIdValidator.cs
+@@ -0,0 +1,21 @@
++﻿using CreditCardApi.Domain.Communications;
++using FluentValidation;
++using System;
++
++namespace CreditCardApi.Validators
++{
++    public class InputIdValidator : AbstractValidator<string>
++    {
++        public InputIdValidator()
++        {
++                RuleFor(x => x)
++                .NotEmpty()
++                .Must(x => IsValidGuid(x)).WithMessage("Input id invalid");
++        }
++
++        public bool IsValidGuid(string id)
++        {
++            return (Guid.TryParse(id, out var guidId) && guidId != Guid.Empty);
++        }
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/Validators/InputRequestValidator.cs b/CreditCardApi/CreditCardApi/Validators/InputRequestValidator.cs
+new file mode 100644
+index 0000000..bc8e1f0
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/Validators/InputRequestValidator.cs
+@@ -0,0 +1,19 @@
++﻿using CreditCardApi.Domain.Communications;
++using FluentValidation;
++
++namespace CreditCardApi.Validators
++{
++    public class InputRequestValidator : AbstractValidator<InputRequest>
++    {
++        public InputRequestValidator()
++        {
++            RuleFor(x => x.Name)
++                .NotEmpty()
++                .MaximumLength(50);
++
++            RuleFor(x => x.CardNumber)
++                .NotEmpty()
++                .Matches(@"^[0-9]+$").WithMessage("CardNumber must be numeric.");
++        }
++    }
++}
+diff --git a/CreditCardApi/CreditCardApi/appsettings.Development.json b/CreditCardApi/CreditCardApi/appsettings.Development.json
+new file mode 100644
+index 0000000..8983e0f
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/appsettings.Development.json
+@@ -0,0 +1,9 @@
++{
++  "Logging": {
++    "LogLevel": {
++      "Default": "Information",
++      "Microsoft": "Warning",
++      "Microsoft.Hosting.Lifetime": "Information"
++    }
++  }
++}
+diff --git a/CreditCardApi/CreditCardApi/appsettings.json b/CreditCardApi/CreditCardApi/appsettings.json
+new file mode 100644
+index 0000000..d9d9a9b
+--- /dev/null
++++ b/CreditCardApi/CreditCardApi/appsettings.json
+@@ -0,0 +1,10 @@
++{
++  "Logging": {
++    "LogLevel": {
++      "Default": "Information",
++      "Microsoft": "Warning",
++      "Microsoft.Hosting.Lifetime": "Information"
++    }
++  },
++  "AllowedHosts": "*"
++}
+diff --git a/CreditCardApi/CreditCardApiTests/CreditCardApiTests.csproj b/CreditCardApi/CreditCardApiTests/CreditCardApiTests.csproj
+new file mode 100644
+index 0000000..55b64c0
+--- /dev/null
++++ b/CreditCardApi/CreditCardApiTests/CreditCardApiTests.csproj
+@@ -0,0 +1,22 @@
++<Project Sdk="Microsoft.NET.Sdk">
++
++  <PropertyGroup>
++    <TargetFramework>netcoreapp3.1</TargetFramework>
++
++    <IsPackable>false</IsPackable>
++  </PropertyGroup>
++
++  <ItemGroup>
++    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
++    <PackageReference Include="xunit" Version="2.4.1" />
++    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
++      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
++      <PrivateAssets>all</PrivateAssets>
++    </PackageReference>
++    <PackageReference Include="coverlet.collector" Version="3.0.2">
++      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
++      <PrivateAssets>all</PrivateAssets>
++    </PackageReference>
++  </ItemGroup>
++
++</Project>
+diff --git a/CreditCardApi/CreditCardApiTests/UnitTest1.cs b/CreditCardApi/CreditCardApiTests/UnitTest1.cs
+new file mode 100644
+index 0000000..9713cdf
+--- /dev/null
++++ b/CreditCardApi/CreditCardApiTests/UnitTest1.cs
+@@ -0,0 +1,14 @@
++using System;
++using Xunit;
++
++namespace CreditCardApiTests
++{
++    public class UnitTest1
++    {
++        [Fact]
++        public void Test1()
++        {
++
++        }
++    }
++}
+diff --git a/CreditCardApi/UnitTests/InputServiceTests.cs b/CreditCardApi/UnitTests/InputServiceTests.cs
+new file mode 100644
+index 0000000..7160d38
+--- /dev/null
++++ b/CreditCardApi/UnitTests/InputServiceTests.cs
+@@ -0,0 +1,52 @@
++using CreditCardApi.Domain.Models;
++using CreditCardApi.Repositories;
++using CreditCardApi.Services;
++using Moq;
++using System;
++using System.Collections.Generic;
++using System.Threading.Tasks;
++using Xunit;
++
++namespace UnitTests
++{
++    public class InputServiceTests
++    {
++        private Mock<IInputRepository> _inputRepository;
++        private Mock<ICreditCardRepository> _creditCardRepository;
++        private IInputService _inputService;
++
++        public InputServiceTests()
++        {
++            _inputRepository = new Mock<IInputRepository>();
++            _creditCardRepository = new Mock<ICreditCardRepository>();
++            _inputService = new InputService(_inputRepository.Object, _creditCardRepository.Object);
++        }
++
++        [Fact]
++        public async Task AddNewInput_ThrowsException_WhenInputDoesNotHaveCreditCardNumber()
++        {
++            // Arrange            
++
++            // Act
++            //var result = _orderService.GetOrder(1);
++            Func<Task> act = () => _inputService.AddNewInput(It.IsAny<Input>()); 
++
++            // Assert
++            await Assert.ThrowsAsync<ArgumentNullException>(act);
++        }
++
++        [Fact]
++        public async Task AddNewInput_ThrowsException_WhenCreditCardNumberIsNotFound()
++        {
++            // Arrange
++            _creditCardRepository.Setup(o => o.SelectByCardNumber(It.IsAny<string>())).ReturnsAsync((CreditCard)null);
++            var newInput = new Input { CardNumber = "1111" };
++
++            // Act
++            Func<Task> act = () => _inputService.AddNewInput(newInput);
++
++            // Assert
++            await Assert.ThrowsAsync<KeyNotFoundException>(act);
++        }
++    }
++}
+diff --git a/CreditCardApi/UnitTests/UnitTests.csproj b/CreditCardApi/UnitTests/UnitTests.csproj
+new file mode 100644
+index 0000000..56c8ed6
+--- /dev/null
++++ b/CreditCardApi/UnitTests/UnitTests.csproj
+@@ -0,0 +1,27 @@
++<Project Sdk="Microsoft.NET.Sdk">
++
++  <PropertyGroup>
++    <TargetFramework>netcoreapp3.1</TargetFramework>
++
++    <IsPackable>false</IsPackable>
++  </PropertyGroup>
++
++  <ItemGroup>
++    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
++    <PackageReference Include="Moq" Version="4.16.1" />
++    <PackageReference Include="xunit" Version="2.4.1" />
++    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
++      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
++      <PrivateAssets>all</PrivateAssets>
++    </PackageReference>
++    <PackageReference Include="coverlet.collector" Version="3.0.2">
++      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
++      <PrivateAssets>all</PrivateAssets>
++    </PackageReference>
++  </ItemGroup>
++
++  <ItemGroup>
++    <ProjectReference Include="..\CreditCardApi\CreditCardApi.csproj" />
++  </ItemGroup>
++
++</Project>
+-- 
+2.17.1.windows.2
+
