@@ -1,0 +1,7 @@
+CreditCardApi/.vs/
+CreditCardApi/CreditCardApi/bin/
+CreditCardApi/CreditCardApi/obj/
+CreditCardApi/IntegrationTest/obj/
+CreditCardApi/UnitTests/obj/
+obj
+bin
